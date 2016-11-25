@@ -14,6 +14,7 @@ public class JugadorModel {
     private String Nombre;
     private String Juego;
     private int Edad;
+    private String ruta;
 
     /**
      * @return the Nombre
@@ -55,6 +56,20 @@ public class JugadorModel {
      */
     public void setEdad(int Edad) {
         this.Edad = Edad;
+    }
+
+    /**
+     * @return the ruta
+     */
+    public String getRuta() {
+        return ruta;
+    }
+
+    /**
+     * @param ruta the ruta to set
+     */
+    public void setRuta(String ruta) {
+        this.ruta = ruta;
     }
     
 }

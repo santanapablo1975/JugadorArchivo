@@ -27,7 +27,7 @@ public class JugadorAdmin {
         try {
             fichero = new FileWriter("C:\\archivos\\jugador.txt", true);
             pw = new PrintWriter(fichero);
-            pw.println(modelo.getNombre()+ "," + modelo.getJuego()+ "," + modelo.getEdad());
+            pw.println(modelo.getNombre()+ "," + modelo.getJuego()+ "," + modelo.getEdad()+ "," + modelo.getRuta());
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -65,6 +65,7 @@ public class JugadorAdmin {
                 modelo.setNombre(arreglo[0]);
                 modelo.setJuego(arreglo[1]);
                 modelo.setEdad(Integer.parseInt(arreglo[2]));
+                modelo.setRuta(arreglo[3]);
                 
                 lista.add(modelo);
             }

@@ -7,7 +7,13 @@ package jugadorarchivo;
 
 import Datos.JugadorAdmin;
 import Modelo.JugadorModel;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.List;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -32,6 +38,7 @@ public class Formulario extends javax.swing.JFrame {
     DefaultTableModel tbModel;
     
     
+    
 
     
     
@@ -40,11 +47,13 @@ public class Formulario extends javax.swing.JFrame {
         modelo.setNombre(txtNombreJugador.getText());
         modelo.setJuego(cbDeporte.getSelectedItem().toString());
         modelo.setEdad(Integer.parseInt(txtEdad.getText()));
+        modelo.setRuta(txtRuta.getText());
+        
         admin.Guardar(modelo);
     }
     
     private void Mostrar(){
-        String columnas[]={"Nombre","Juego","Edad"};
+        String columnas[]={"Nombre","Juego","Edad","Ruta"};
         tbModel=new DefaultTableModel(null, columnas);//init table model
         List<JugadorModel>lista=admin.Mostrar();
         for (int i = 0; i < lista.size(); i++) {
@@ -53,9 +62,64 @@ public class Formulario extends javax.swing.JFrame {
             tbModel.setValueAt(modelo.getNombre(), i, 0);
             tbModel.setValueAt(modelo.getJuego(), i, 1);
             tbModel.setValueAt(modelo.getEdad(), i, 2);                  
+            tbModel.setValueAt(modelo.getRuta(), i, 3);                  
             
         }
         tbTabla.setModel(tbModel);  //asignar el modelo a la tabla
+    }
+    
+    
+    private void CargarImagen(){
+    JFileChooser selector=new JFileChooser();  //selector de archivos
+        selector.setDialogTitle("Abrir Imagen");  // titulo de la ventana
+
+        FileNameExtensionFilter filtro2=new FileNameExtensionFilter("Imagenes", "jpg","png","bmp","gif");  //filtro de imagenes
+        selector.setFileFilter(filtro2); // aplicar el filtro
+        
+        int opcion=selector.showOpenDialog(null);  // validar si se seleccion archivo o no
+        
+        if (opcion==JFileChooser.APPROVE_OPTION) { // si se selecciono archivo devuelve "1"
+            try {
+                File imagenSeleccionada = selector.getSelectedFile(); //objeto file
+                BufferedImage original = ImageIO.read(new File(imagenSeleccionada.getAbsolutePath())); //clase
+                lbImagen.setIcon(new ImageIcon(original));
+                
+                
+                String strNombreImagen = imagenSeleccionada.getName();
+                
+                
+                //String Ruta="C:\\Archivos\\imagen.png" + strNombreImagen;  
+                String Ruta="C:\\Archivos\\" + strNombreImagen;  
+                
+                char Arreglo[]=strNombreImagen.toCharArray();
+                int punto = 0;
+                
+                for (int i = 0; i < Arreglo.length; i++) {
+                    if (Arreglo[i]=='.'){
+                        punto = i;
+                }                
+                    
+                }
+                
+                String ExtFile = "";
+                for (int i = 0; i < Arreglo.length; i++) {
+                    if (i > punto) {
+                        //ExtFile += Arreglo[i];
+                        ExtFile = ExtFile + Arreglo[i];
+                        
+                    }
+                    
+                    
+                }
+                
+                //ImageIO.write(original, "png", new File(Ruta));
+                ImageIO.write(original, ExtFile, new File(Ruta));
+                txtRuta.setText(Ruta);
+            } catch (Exception e) {
+           e.printStackTrace();
+            }   
+        
+    }
     }
     
     
@@ -81,6 +145,10 @@ public class Formulario extends javax.swing.JFrame {
         btGuardar = new javax.swing.JButton();
         btBorrar = new javax.swing.JButton();
         btMostrar = new javax.swing.JButton();
+        lbImagen = new javax.swing.JLabel();
+        btnImagen = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
+        txtRuta = new javax.swing.JTextField();
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -152,19 +220,40 @@ public class Formulario extends javax.swing.JFrame {
             }
         });
 
+        btnImagen.setText("Imagen");
+        btnImagen.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnImagenActionPerformed(evt);
+            }
+        });
+
+        jLabel4.setText("Ruta Imagen:");
+
+        txtRuta.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtRutaActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(38, 38, 38)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addGap(18, 18, 18)
+                        .addComponent(txtRuta))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btGuardar)
                         .addGap(18, 18, 18)
                         .addComponent(btMostrar)
                         .addGap(34, 34, 34)
-                        .addComponent(btBorrar))
+                        .addComponent(btBorrar)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnImagen))
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -176,29 +265,39 @@ public class Formulario extends javax.swing.JFrame {
                             .addComponent(cbDeporte, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtNombreJugador, javax.swing.GroupLayout.PREFERRED_SIZE, 272, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtEdad, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(86, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lbImagen, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(60, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(30, 30, 30)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(txtNombreJugador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(txtEdad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(29, 29, 29)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel3)
-                    .addComponent(cbDeporte, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(30, 30, 30)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btGuardar)
-                    .addComponent(btBorrar)
-                    .addComponent(btMostrar))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 38, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel1)
+                            .addComponent(txtNombreJugador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(24, 24, 24)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel2)
+                            .addComponent(txtEdad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(29, 29, 29)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel3)
+                            .addComponent(cbDeporte, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(30, 30, 30)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btGuardar)
+                            .addComponent(btBorrar)
+                            .addComponent(btMostrar)
+                            .addComponent(btnImagen))
+                        .addGap(34, 34, 34)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel4)
+                            .addComponent(txtRuta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(lbImagen, javax.swing.GroupLayout.PREFERRED_SIZE, 204, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -227,6 +326,17 @@ public class Formulario extends javax.swing.JFrame {
     private void btBorrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btBorrarActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btBorrarActionPerformed
+
+    private void btnImagenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImagenActionPerformed
+        // TODO add your handling code here:
+        CargarImagen();
+        
+        
+    }//GEN-LAST:event_btnImagenActionPerformed
+
+    private void txtRutaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtRutaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtRutaActionPerformed
 
     /**
      * @param args the command line arguments
@@ -267,15 +377,19 @@ public class Formulario extends javax.swing.JFrame {
     private javax.swing.JButton btBorrar;
     private javax.swing.JButton btGuardar;
     private javax.swing.JButton btMostrar;
+    private javax.swing.JButton btnImagen;
     private javax.swing.JComboBox<String> cbDeporte;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTable1;
+    private javax.swing.JLabel lbImagen;
     private javax.swing.JTable tbTabla;
     private javax.swing.JTextField txtEdad;
     private javax.swing.JTextField txtNombreJugador;
+    private javax.swing.JTextField txtRuta;
     // End of variables declaration//GEN-END:variables
 }
